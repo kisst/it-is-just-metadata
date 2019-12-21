@@ -37,4 +37,3 @@ class FlowLogGraph:
         g.view()
 
 
-first = FlowLogGraph("flow_log_sample_5.log")
