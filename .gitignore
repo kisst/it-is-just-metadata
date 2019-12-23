@@ -1,6 +1,6 @@
 # Project specific
 test-data/samples/aws-s3-standard/*.log.gz
-data/ip-ranges.json
+lib/data/ip-ranges.json
 
 ### Python ###
 # Byte-compiled / optimized / DLL files

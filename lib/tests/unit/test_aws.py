@@ -80,7 +80,7 @@ def test_ranges_fetch_missing():
     Let's make sure no local copy exist, and see it fetched
     """
     cwd = os.path.dirname(__file__)
-    json_file = os.path.join(cwd, "../../../data/ip-ranges.json")
+    json_file = os.path.join(cwd, "../../../lib/data/ip-ranges.json")
     # remove it so that it will be pulled
     os.remove(json_file)
     ranges = aws.ip_pools_v4()

@@ -10,6 +10,7 @@ import ipaddress
 import logging as log
 import requests
 import arrow
+from pathlib import Path, PureWindowsPath
 from lib import settings
 
 
@@ -20,7 +21,8 @@ def ip_pools_v4():
     if the local data is too old, pull down the IP ranges from AWS
     """
     cwd = os.path.dirname(__file__)
-    json_file = os.path.join(cwd, "../data/ip-ranges.json")
+    json_file_raw = PureWindowsPath("data\\ip-ranges.json")
+    json_file = cwd / Path(json_file_raw)
     exists = os.path.isfile(json_file)
     good = True
     if exists:
