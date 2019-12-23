@@ -35,5 +35,3 @@ class FlowLogGraph:
         for line in self.flow_log:
             g.edge(line[0], line[1], dir=line[2])
         g.view()
-
-

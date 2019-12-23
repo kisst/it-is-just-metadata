@@ -33,7 +33,7 @@ jobs:
       - name: Test with pytest
         run: |
           pip install -r dev-requirements.txt
-          coverage run -m pytest
+          coverage run -m pytest -v
       - name: Generate coverate report
         run: |
           coverage report -m
