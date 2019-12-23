@@ -56,18 +56,62 @@ def ip_pools_v4():
                 return False
 
 
+def pick_the_most_usefull(ranges):
+    """
+    In case there is no one2one IP mapping, find the most
+    relevant one, based on network size, service, etc
+    """
+    # First lets find sizing
+    smallest_net_size = 0
+    for line in ranges:
+        size = ipaddress.IPv4Network(line["ip_prefix"]).prefixlen
+        line["size"] = size
+        if size > smallest_net_size:
+            smallest_net_size = size
+    log.debug("The most specific network size is %s", smallest_net_size)
+    for line in ranges:
+        if line["size"] < smallest_net_size:
+            ranges.remove(line)
+            log.debug("Removed %s", line)
+
+    # Then general / less important info
+    for _, item in settings.AWS_LEAST_RANGE_INFO.items():
+        for line in ranges:
+            if line["service"] == item:
+                ranges.remove(line)
+
+    # If nothing worked just merge it into one line
+    if len(ranges) != 1:
+        combi_line = ""
+        for line in ranges:
+            combi_line = []
+            combi_line["service"] = combi_line + " " + line["service"]
+        return combi_line
+    else:
+        return ranges[0]
+
+
 def map_ipv4_to_service(ipv4):
     """
     Args: A single IPv4 IP adress
     Return: The name of the service, if the IP belongs to an AWS network, None if not AWS address
     """
+    mapping = []
     aws_pools = ip_pools_v4()
+    ipo = ipaddress.IPv4Address(ipv4)
     if ipaddress.IPv4Address(ipv4).is_private:
         return
     for pool in aws_pools:
-        if ipaddress.IPv4Address(ipv4) in ipaddress.IPv4Network(pool["ip_prefix"]):
+        poolo = ipaddress.IPv4Network(pool["ip_prefix"])
+        if ipo in poolo:
+            mapping.append(pool)
             log.info("Match found: %s", pool)
-            return pool["service"]
+    count = len(mapping)
+    if count > 1:
+        line = pick_the_most_usefull(mapping)
+        return line["service"]
+    elif count == 1:
+        return mapping[0]["service"]
     return
 
 
